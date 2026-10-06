@@ -1,11 +1,6 @@
 package com.phh.fx_service.conversion;
 
-import com.phh.fx_service.balance.Balance;
-import com.phh.fx_service.balance.BalanceMapper;
-import com.phh.fx_service.balance.BalanceRepository;
 import com.phh.fx_service.balance.BalanceResponse;
-import com.phh.fx_service.client.Client;
-import com.phh.fx_service.client.ClientRepository;
 import com.phh.fx_service.conversion.dto.ConversionHistoryResponse;
 import com.phh.fx_service.conversion.dto.ConversionResponse;
 import com.phh.fx_service.conversion.dto.CreateConversionRequest;
@@ -19,15 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -178,39 +169,6 @@ public class ConversionService {
 						balances
 				)
 		);
-	}
-
-	private Balance getBalance(
-			Map<String, Balance> balancesByCurrency,
-			String clientId,
-			String currency
-	) {
-		Balance balance = balancesByCurrency.get(currency);
-
-		if (balance == null) {
-			throw new BalanceNotFoundException(
-					clientId,
-					currency
-			);
-		}
-
-		return balance;
-	}
-
-	private void validateFunds(
-			Balance sourceBalance,
-			BigDecimal sourceAmount,
-			String clientId,
-			String sourceCurrency
-	) {
-		if (sourceBalance.getAmount()
-				.compareTo(sourceAmount) < 0) {
-
-			throw new InsufficientFundsException(
-					clientId,
-					sourceCurrency
-			);
-		}
 	}
 
 	public Page<ConversionHistoryResponse> findConversions(
